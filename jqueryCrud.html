@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JqueryCRUD</title>
+    <style>
+        .degree {
+            visibility: hidden;
+        }
+        .adddegree{
+            visibility: visible;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="jquery.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Submit the form</h2>
+        <button id="addForm" class="btn btn-primary bnt-lg">ADD</button>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Sr No</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone no</th>
+                    <th scope="col">Date of Birth</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Hobbies</th>
+                    <th scope="col">Eduction</th>
+                    <th scope="col" colspan="2">Action</th>
+                </tr>
+            </thead>
+            <tbody id="tablebody">
+
+            </tbody>
+        </table>
+        <!----Add form modal starts here--->
+        <div id="addModal" class="modal fade" role='dialog'>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form name="studentForm" onsubmit="return false">
+                            <div class="form-group">
+
+                                <label for="exampleInputEmail1">Name</label>
+                                <input type="text" class="form-control" id="inputName" aria-describedby="emailHelp"
+                                    placeholder="Enter Name" pattern="^[a-zA-Z ]{2,30}$"
+                                    title="minimum 2 and max 30 numbers not allowed" name="txtName"
+                                    onchange="nameValidation()">
+                                <span id="txtvalname" class="error"></span>
+                            </div>
+                            <div class="form-group">
+
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" name="txtEmail" class="form-control" id="inputEmail"
+                                    aria-describedby="emailHelp" placeholder="Enter email" onchange="emailValidation()">
+                                <span id="txtvalemail" class="error"></span>
+                            </div>
+                            <div class="form-group">
+
+                                <label for="exampleInputEmail1">Phone Number</label>
+                                <input type="number" class="form-control" id="inputPhone" aria-describedby="emailHelp"
+                                    placeholder="Enter phone number" name="txtPhone" onchange="phoneValidation()">
+                                <span id="txtvalphone" class="error"></span>
+                            </div>
+                            <div class="form-group">
+                                <div id="gender">
+                                    <label for="exampleInputEmail1">Gender</label>
+                                    <label for="exampleInputEmail1">Male</label>
+                                    <input type="radio" aria-label="Radio button for following text input" value="male"
+                                        id="txtmale" name="txtgender" onchange="genderValidation()">
+                                    <label for="exampleInputEmail1">Female</label>
+                                    <input type="radio" aria-label="Radio button for following text input"
+                                        value="female" id="txtfemale" name="txtgender" onchange="genderValidation()">
+
+                                </div>
+                                <span id="txtErrorGender" class="error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Hobby</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="travel" id="checkTravel"
+                                        name="chk[]" onchange="hobbyValidation()">
+                                    <label class="form-check-label" for="defaultCheck1">
+                                        travel
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="reading" id="checkReading"
+                                        name="chk[]" onchange="hobbyValidation()">
+                                    <label class="form-check-label" for="defaultCheck2">
+                                        reading
+                                    </label>
+
+                                </div>
+                                <span id="txtErrorHobby" class="error"></span>
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="exampleInputEmail1">Date Of Birth</label>
+                                <input type="date" class="form-control" id="inputDate" aria-describedby="emailHelp"
+                                    placeholder="Enter Name" name="txtDob" onchange="dobValidation()">
+                                <span id="txtErrorDob" class="error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Education">Eduction</label>
+                                <select id="ddleducation" class="form-control"
+                                    onchange="displaydegree() ,educationValidation()" name="education">
+                                    <option value="">Select education</option>
+                                    <option value="school" id="valueSchool">school</option>
+                                    <option value="bechelor" id="valueBechelor">Bechelor</option>
+                                    <option value="master" id="valueMaster">Master</option>
+
+                                </select>
+                                <span id="txtEducation" class="error"></span>
+                            </div>
+                            <div class="form-group degree" id="degreeinput">
+
+                                <label for="txtdegree">Degree</label>
+                                <input type="text" class="form-control" id="inputdegree" aria-describedby="emailHelp"
+                                    placeholder="Enter Name" name="txtDegree">
+                            </div>
+                            <button type="submit" class="btn btn-primary"
+                                id="btnSubmit">Submit</button>
+                            <span id='editButton'></span>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                            onclick="formReset()">Cancel</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--add from Modal ends here--->
+        <!----delete modal starts here--->
+        <div id="deleteModal" class="modal fade" role='dialog'>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Delete </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do You Really Want to Delete This ?</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <span id='deleteButton'></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--delete Modal ends here--->
+        <!----data edit succcesfully modal starts here--->
+        <div id="editConfirmModal" class="modal fade" role='dialog'>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p style="color: green">data edited successfully</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                        <span id='deleteButton'></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--edit data success Modal ends here--->
+        <!----form submitted succcesfully modal starts here--->
+        <div id="formSubmitModal" class="modal fade" role='dialog'>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p style="color: green">Form submitted successfully</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--form submitted success Modal ends here--->
+        <!----gender update succcesfully modal starts here--->
+        <div id="genderUpdateModal" class="modal fade" role='dialog'>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p style="color: green">gender update successfully</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                        <span id='deleteButton'></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--edit data success Modal ends here--->
+        <div id="successMessage" style="font-size:20px;color:green;font-weight:bold;"></div>
+    </div>   
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script>
+        var data=[];
+        var flag=0;
+        $('#addForm').click(function(){
+            document.studentForm.reset();
+            $('input[type="radio"]').removeAttr('checked');
+            $('input[type="checkbox"]').removeAttr('checked');
+            $('#editButton').css('display','none');
+            $('#btnSubmit').css('display','block');
+            $('#addModal').modal({ backdrop: 'static', keyboard: false });
+        });
+        function formReset() {
+            document.studentForm.reset();
+        }
+        function displaydegree() {
+            var degree = $('#ddleducation');
+            if (degree.val() == "bechelor" || degree.val() == "master") {
+                $('#degreeinput').removeClass("degree").addClass("adddegree");
+            }
+            else {
+                $('#degreeinput').addClass("degree").removeClass("adddegree");
+            }
+        }
+        function submitform() {
+            let str = "";
+            var tablebody = $('#tablebody');
+            var genderData = $('input[type="radio"]:checked').val();
+            var education = $('#ddleducation').val();
+            var eddetail;
+            if (education == 'school') {
+                eddetail = 'School';
+            }
+            if (education == 'bechelor' || education == 'master') {
+                var eddetail = $('#inputdegree').val();
+            }
+            var checkboxes = $('input[name="chk[]"]');
+            var vals = "";
+            for (var i = 0, n = checkboxes.length; i < n; i++) {
+                if (checkboxes[i].checked) {
+                    vals += "," + checkboxes[i].value;
+                }
+            }
+            if (vals) {
+                vals = vals.substring(1);
+            }
+            var formData = {
+                id: "id" + Math.random().toString(16).slice(2),
+                name: $('#inputName').val(),
+                email: $('#inputEmail').val(),
+                phone: $('#inputPhone').val(),
+                gender: genderData,
+                dob: $('#inputDate').val(),
+                hobby: vals,
+                ddlEd: document.studentForm.education.value,
+                education: eddetail
+            };
+            data.push(formData);
+            localStorage.setItem('allValue', JSON.stringify(data));
+            getData();
+            document.studentForm.reset();
+            $('#addModal').modal('hide');
+            console.log(data.length);
+
+        }
+        window.onload = function () {
+            var Data = localStorage.getItem('allValue');
+            if(Data == null){
+                localStorage.setItem('allValue', JSON.stringify(data));
+            }
+           else{
+            getData();
+           }
+            
+        };
+        function getData() {
+            var str = "";
+            var retrieveData = localStorage.getItem('allValue');
+            data = JSON.parse(retrieveData);
+            $.each(data, function (index, element) {
+                str = str + `<tr>
+                <th scope="row">${index + 1}</th>
+                <td>${element.name}</td>
+                <td>${element.email}</td>
+                <td>${element.phone}</td>
+                <td>${element.dob}</td>
+                <td><div class="form-group">
+                                <select id="ddlGenderUpdate${index}" class="form-control input-sm" onchange="updateGender(${index})">
+                                    <option value="male" ${element.gender == "male" ? 'selected' : ''}>Male</option>
+                                    <option value="female" ${element.gender == "female" ? 'selected' : ''}>Female</option>
+                                </select>
+                            </div></td>
+                <td>${element.hobby}</td>
+                <td>${element.education}</td>
+                <td><button class="btn btn-danger" onclick="confirmDeleteModal('${element.id}')">DELETE</button></td>
+                <td><button class="btn btn-primary" id="btnEdit" onclick="confirmEditModal('${element.id}')">EDIT</button></td>
+              </tr>`;
+                });
+            $('#tablebody').html(str);
+        }
+        function confirmDeleteModal(index) {
+            $('#deleteModal').modal({ backdrop: 'static', keyboard: false });
+            var id = -1
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id === index) {
+                    id = i;
+                    break;
+                }
+            }
+            $('#deleteButton').html('<a class="btn btn-danger" onclick="deleteData(' + id + ')">Delete</a>');
+        }
+        function deleteData(id) {
+            var retrieveData = localStorage.getItem('allValue');
+            data = JSON.parse(retrieveData);
+            data.splice(id, 1);
+            localStorage.setItem('allValue', JSON.stringify(data));
+            getData();
+            $('#deleteModal').modal('hide');
+        }
+        function confirmEditModal(index) {
+            var id = -1
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id === index) {
+                    id = i;
+                    break;
+                }
+            }
+            $('#editButton').css('display','block');
+            $('#btnSubmit').css('display','none');
+            $('#addModal').modal();
+            var retrieveData = localStorage.getItem('allValue');
+            data = JSON.parse(retrieveData);
+            $('#inputName').val(data[id].name);
+            $('#inputEmail').val(data[id].email);
+            $('#inputPhone').val(data[id].phone);
+            $('#inputDate').val(data[id].dob);
+            if (data[id].ddlEd == "bechelor" || data[id].ddlEd == "master") {
+                $('#degreeinput').removeClass("degree").addClass("adddegree");
+                $('#inputdegree').val(data[id].education);
+            }
+            else{
+                $('#degreeinput').addClass("degree").removeClass("adddegree");
+            }
+            if (data[id].gender == "male") {
+                $('#txtmale').attr("checked",true);
+            } else {
+                $('#txtfemale').attr("checked",true);
+            }
+            if (data[id].hobby == "travel,reading") {
+                $('#checkTravel').attr("checked",true);
+                $('#checkReading').attr("checked",true);
+            }
+            else if (data[id].hobby == "travel") {
+                $('#checkTravel').attr("checked",true);
+            }
+            else {
+                $('#checkReading').attr("checked",true);
+            }
+            if (data[id].ddlEd == "school") {
+                $('#valueSchool').attr("selected",true);
+            }
+            else if (data[id].ddlEd == "bechelor") {
+                $('#valueBechelor').attr("selected",true);
+            }
+            else {
+                $('#valueMaster').attr("selected",true);
+            }
+            $('#editButton').html('<a class="btn btn-primary" onclick="return editData(' + id + ')">Update</a>');
+
+        }
+        function editData(id) {
+            var str = "";
+            var newName = $('#inputName').val();
+            var newEmail =  $('#inputEmail').val();
+            var newPhone =  $('#inputPhone').val();
+            var newDate =  $('#inputDate').val();
+            var newDdlED = $('#ddleducation').val();
+            var newGender = $('input[type="radio"]:checked').val();
+            var newEducation = "";
+            if ($('#ddleducation').val() == "school") {
+                newEducation = "school"
+            }
+            else if ($('#ddleducation').val() == "bechelor" || $('#ddleducation').val() == "master") {
+                newEducation =  $('#inputdegree').val();;
+            }
+            var checkboxes =  $('input[name ="chk[]"]');
+            var vals = "";
+            for (var i = 0, n = checkboxes.length; i < n; i++) {
+                if (checkboxes[i].checked) {
+                    vals += "," + checkboxes[i].value;
+                }
+            }
+            if (vals) {
+                vals = vals.substring(1);
+            }
+            flag = 0;
+            nameValidation();
+            emailValidationUp();
+            phoneValidationUp();
+            genderValidation();
+            hobbyValidation();
+            dobValidation();
+            educationValidation();
+            if (flag == 1) {
+                return false;
+            }
+            else {
+                data.forEach((element, index) => {
+                    if (id == index) {
+                        element.name = newName;
+                        element.email = newEmail;
+                        element.phone = newPhone;
+                        element.dob = newDate;
+                        element.gender = newGender;
+                        element.hobby = vals;
+                        element.ddlEd = newDdlED;
+                        element.education = newEducation;
+                    }
+                });
+                localStorage.setItem('allValue', JSON.stringify(data));
+                getData();
+                console.log(data[id].name);
+                // do your stuffs with id
+                document.studentForm.reset();
+                $('#addModal').modal('hide'); // now close modal
+                $('#editConfirmModal').modal({ backdrop: 'static', keyboard: false });
+            }
+        }
+        function nameValidation() {
+            var name = $('#inputName').val();
+            if (name == "") {
+                $('#txtvalname').html("**please enter name");
+                flag = 1;
+            }
+            else {
+                $('#txtvalname').html("");
+                var namreg = /^[a-zA-Z ]{2,30}$/;
+                if (!namreg.test(name)) {
+                    $('#txtvalname').html("**please enter valid name");;
+                    flag = 1;
+                }
+                else {
+                    $('#txtvalname').html("");
+                }
+            }
+        }
+        function emailValidation() {
+            var email = document.studentForm.txtEmail.value;
+            if (!email) {
+                $('#txtvalemail').html("**please enter email");
+                flag = 1;
+            }
+            else {
+                $('#txtvalemail').html("");;
+                var emailreg = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+                if (!emailreg.test(email)) {
+                    $('#txtvalemail').html("**please enter valid email");
+                    flag = 1;
+                }
+                else {
+                    $('#txtvalemail').html("");
+                    var check=0;
+                    $.each(data,function(index,element){
+                        if(element.email == email){
+                            check=1;
+                        }
+                    });
+                    if(check ==1){
+                        $('#txtvalemail').html("**Email already exists"); 
+                        flag = 1;
+                    }
+                    else{
+                        $('#txtvalemail').html("");
+                    }
+                }
+            }
+        }
+        function emailValidationUp() {
+            var email = document.studentForm.txtEmail.value;
+            if (!email) {
+                $('#txtvalemail').html("**please enter email");
+                flag = 1;
+            }
+            else {
+                $('#txtvalemail').html("");;
+                var emailreg = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+                if (!emailreg.test(email)) {
+                    $('#txtvalemail').html("**please enter valid email");
+                    flag = 1;
+                }
+            }
+        }
+        function phoneValidation() {
+            var phone = document.studentForm.txtPhone.value;
+            if (!phone) {
+                 $('#txtvalphone').html("**please enter phone");
+                flag = 1;
+            }
+            else {
+                $('#txtvalphone').html("");
+
+                var phoneReg = /^[6-9]\d{9}$/;
+                if (!phoneReg.test(phone)) {
+                    $('#txtvalphone').html("**please enter valid phone");
+                    flag = 1;
+                }
+                else {
+                    $('#txtvalphone').html("");
+                    var check=0;
+                    $.each(data,function(index,element){
+                        if(element.phone == phone){
+                            check=1;
+                        }
+                    });
+                    if(check ==1){
+                        $('#txtvalphone').html("**Phone no already exists"); 
+                        flag = 1;
+                    }
+                    else{
+                        $('#txtvalphone').html("");
+                    }
+                }
+            }
+        }
+        function phoneValidationUp() {
+            var phone = document.studentForm.txtPhone.value;
+            if (!phone) {
+                 $('#txtvalphone').html("**please enter phone");
+                flag = 1;
+            }
+            else {
+                $('#txtvalphone').html("");
+
+                var phoneReg = /^[6-9]\d{9}$/;
+                if (!phoneReg.test(phone)) {
+                    $('#txtvalphone').html("**please enter valid phone");
+                    flag = 1;
+                }
+                else {
+                    $('#txtvalphone').html("");
+                }
+            }
+        }
+        function genderValidation() {
+            var gender = document.studentForm.txtgender.value;
+            if (gender == "") {
+                $('#txtErrorGender').html("**please select gender");
+                flag = 1;
+            }
+            else {
+                $('#txtErrorGender').html("");;
+
+            }
+        }
+        function hobbyValidation() {
+            var hobbies = [];
+            var checkboxes = $('input[name ="chk[]"]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    hobbies.push(checkboxes[i].value);
+                }
+            }
+            if (hobbies.length) {
+                $('#txtErrorHobby').html("");
+            }
+            else {
+
+                $('#txtErrorHobby').html("**select hobby");
+                flag = 1;
+            }
+        }
+        function dobValidation() {
+            var dob = document.studentForm.txtDob.value
+            if (dob == "") {
+                $('#txtErrorDob').html("**please enter date of birth ");
+                flag = 1;
+            }
+            else {
+                $('#txtErrorDob').html("");
+              }
+        }
+        function educationValidation() {
+            var ddlEducation = document.studentForm.education.value
+            if (ddlEducation == "") {
+                $('#txtEducation').html("**please select qualification");
+                flag = 1;
+            }
+            else {
+                $('#txtEducation').html("");
+
+            }
+        }
+        $('#btnSubmit').click(function(){
+            flag = 0;
+            nameValidation();
+            emailValidation();
+            phoneValidation();
+            genderValidation();
+            hobbyValidation();
+            dobValidation();
+            educationValidation();
+            if (flag == 1) {
+                return false;
+            }
+            else {
+                $('#formSubmitModal').modal({ backdrop: 'static', keyboard: false });
+                submitform();
+            }
+        });
+    </script>
+</body>
+</html>
